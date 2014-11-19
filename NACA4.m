@@ -1,4 +1,5 @@
-function [ camber, outline_x, outline_y ] = NACA4( M, P, TT, n )
+function [ camber, outline_x, outline_y, trailing_edge ] = NACA4( ...
+                                                            M, P, TT, n )
 %NACA4 Returns the camber and outline of a 2-d NACA 4-digit airfoil
 %   M   -- the first , Max Camber
 %   P   -- the second digit, Location of Max Camber
@@ -7,8 +8,13 @@ function [ camber, outline_x, outline_y ] = NACA4( M, P, TT, n )
 %
 %   camber -- the points of the camber line. 
 %                (1,:) are the x positions, (2,:) are the y positions
-%   outline -- the points of the outline of the foil.
-%                (1,:) are the x positions, (2,:) are the y positions
+%   outline_x -- a 1xn array of x-locations of the points of the outline 
+%                   of the foil.
+%   outline_y -- a 1xn array of y-locations of the points of the outline 
+%                   of the foil.
+%                
+%   trailing_edge -- the location of the trailing edge point.
+%                (1) is the x-position, (2) is the y-position
 %
 % Gerard Boberg and Trevor Buck
 %  Adapted from Gerard's solution to hwk5, p2 for Dr. Marshall's Aero 306
@@ -32,7 +38,8 @@ for ii = 1:n                % Camber line equation taken from Wikipedia
 end
 
 theta  = atan( theta );
-camber = [ x; yc]; % array we return for the camber line
+camber        = [ x; yc];             % array we return for the camber line
+trailing_edge = [ x(end), yc(end) ];  % the trailing edge point
 
 %% Calculate thickness distribution
 % constants a0 -> a4 from wikipedia NACA page
@@ -56,5 +63,6 @@ yl = yc - dt .* cos( theta );
 %  junction between lower and upper points.
 outline_x = [ xu, ( xl(end:-1:1) ) ];  % As such, reversed the lower points
 outline_y = [ yu, ( yl(end:-1:1) ) ];  %  before laying arrays end-to-end
+
 
 end % End of File

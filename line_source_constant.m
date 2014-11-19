@@ -6,7 +6,7 @@
 %   adapted from Dr. Marshall's given code, for his class
 % 18 Nov 2014
 %
-function [ ux, uy ] = line_source_constant_2d( lambda, x, y, xp, yp )
+function [ ux, uy ] = line_source_constant( lambda, x, y, xp, yp )
 % Calculates the induced Velocity at a point from a constant strength
 % source panel.
 %
