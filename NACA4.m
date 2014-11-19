@@ -1,4 +1,4 @@
-function [ camber, outline ] = NACA4( M, P, TT, n )
+function [ camber, outline_x, outline_y ] = NACA4( M, P, TT, n )
 %NACA4 Returns the camber and outline of a 2-d NACA 4-digit airfoil
 %   M   -- the first , Max Camber
 %   P   -- the second digit, Location of Max Camber
@@ -21,12 +21,12 @@ x     = linspace( 0, 1, n );  % points to calculate
 %% Calculate the camber line
 yc    = 1:n;  % camber line
 theta = 1:n;  % slope of the camber line
-for ii = 1:n
+for ii = 1:n                % Camber line equation taken from Wikipedia
     if( x(ii) <= p )        % before the max camber point
-        yc(ii)    = m/p^2     * ( 2*p*x(ii) - x(ii)^2 );   
+        yc(ii)    =    m/p^2  * ( 2*p*x(ii) - x(ii)^2 );   
         theta(ii) = 2*(m/p^2) * ( p - x(ii) );
     else                    % after the max camber point
-        yc(ii)    = m/(1-p)^2   * ( (1-2*p) + 2*p*x(ii) - x(ii)^2 );
+        yc(ii)    =   m/(1-p)^2 * ( (1-2*p) + 2*p*x(ii) - x(ii)^2 );
         theta(ii) = 2*m/(1-p)^2 * ( p - x(ii) );
     end
 end
@@ -50,6 +50,11 @@ xl = x + dt .* sin( theta );
 yu = yc + dt .* cos( theta );
 yl = yc - dt .* cos( theta );
 
-outline = [ xl, xu; yl, yu ];
-end
+% The calculations produced and array that goes left to right on both
+%   the upper and lower points.
+% If layed end-to-end, it would jump to the front of the airfoil at the
+%  junction between lower and upper points.
+outline_x = [ xu, ( xl(end:-1:1) ) ];  % As such, reversed the lower points
+outline_y = [ yu, ( yl(end:-1:1) ) ];  %  before laying arrays end-to-end
 
+end % End of File
