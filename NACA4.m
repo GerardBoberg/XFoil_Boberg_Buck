@@ -16,7 +16,7 @@ function [ camber, outline_x, outline_y, trailing_edge ] = NACA4( ...
 %   trailing_edge -- the location of the trailing edge point.
 %                (1) is the x-position, (2) is the y-position
 %
-% Gerard Boberg and Trevor Buck
+% Gerard Boberg and Trevor Buck and Zane Paterson
 %  Adapted from Gerard's solution to hwk5, p2 for Dr. Marshall's Aero 306
 
 m =  M / 100; % max camber

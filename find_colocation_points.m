@@ -17,7 +17,7 @@ function [ x_locations, y_locations ] = find_colocation_points( ...
 %   y_locations: array of the y-components of the colocation points.
 %                   Length n-1
 %
-%  Gerard Boberg and Trevor Buck
+%  Gerard Boberg and Trevor Buck and Zane Paterson
 %  18 Nov 2014
 
 n = length( x_panels ) - 1;
