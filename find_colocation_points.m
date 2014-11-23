@@ -1,3 +1,5 @@
+%  Gerard Boberg and Trevor Buck and Zane Patterson
+%  18 Nov 2014
 function [ x_locations, y_locations ] = find_colocation_points( ...
                                              x_panels, y_panels, location )
 %FIND_COLOCATION_POINTS_3QUARTER returns the location of the colocation
@@ -17,9 +19,6 @@ function [ x_locations, y_locations ] = find_colocation_points( ...
 %   y_locations: array of the y-components of the colocation points.
 %                   Length n-1
 %
-%  Gerard Boberg and Trevor Buck and Zane Paterson
-%  18 Nov 2014
-
 n = length( x_panels ) - 1;
 
 if ( n ~= ( length( y_panels ) - 1 ) )

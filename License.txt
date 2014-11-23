@@ -1,7 +1,7 @@
 /*
  * Modified Open BSD License
  *
- * Copyright (c) 2014 GERARD BOBERG, TREVOR BUCK, and ZANE PATERSON
+ * Copyright (c) 2014 GERARD BOBERG, TREVOR BUCK, and ZANE PATTERSON
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose -- with one exception listed below -- with or without fee 

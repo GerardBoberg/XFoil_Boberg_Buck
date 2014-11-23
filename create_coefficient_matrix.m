@@ -1,3 +1,5 @@
+% Gerard Boberg and Trevor Buck and Zane Patterson
+% 18 Nov 2014
 function [ A ] = create_coefficient_matrix( beta , normals )
 %CREATE_COEFFICIENT_MATRIX Dots each element of the beta matrix with the 
 %corrosponding normal vector.
@@ -8,9 +10,6 @@ function [ A ] = create_coefficient_matrix( beta , normals )
 %   outputs:
 %       A   : an NxM matrix that is simply every spot in beta dotted with
 %           the normal for that row.
-%   
-% Gerard Boberg and Trevor Buck and Zane Paterson
-% 18 Nov 2014
 
 n = size( beta, 1 ); % number of rows
 m = size( beta, 2 ); % number of columns

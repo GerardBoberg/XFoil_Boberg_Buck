@@ -1,6 +1,6 @@
 %% Aero 306
 % XFoil Project
-% Gerard Boberg and Trevor Buck and Zane Paterson
+% Gerard Boberg and Trevor Buck and Zane Patterson
 %
 % Adapted from the solution to hwk6, p1, which was
 %  adapted from Gerard's solution to hwk5, p1 which was

@@ -1,3 +1,5 @@
+% Written by Gerard Boberg and Trevor Buck and Zane Patterson
+% 18 Nov 2014
 function [ panel_normals ] = calc_normal_vectors( x_points, y_points )
 %CALC_NORMAL_VECTORS Takes in the airfoil panels, and calculates the
 %normal of each panel.
@@ -14,8 +16,6 @@ function [ panel_normals ] = calc_normal_vectors( x_points, y_points )
 %                       normal vector of that panel.
 %
 %
-% Written by Gerard Boberg and Trevor Buck and Zane Paterson
-% 18 Nov 2014
 
 n = length( x_points ) - 1; % The number of panels on the airfoil.
 
