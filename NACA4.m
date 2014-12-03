@@ -22,7 +22,8 @@ function [ camber, outline_x, outline_y, trailing_edge ] = NACA4( ...
 m =  M / 100; % max camber
 p =  P / 10;  % location of max camber
 t = TT / 100; % thickness
-x     = linspace( 0, 1, n );  % points to calculate
+x     = linspace( 0, pi, n );  % points to calculate
+x     = (1 - cos(x)) / 2;      % transforms into Aero cos space
 
 %% Calculate the camber line
 yc    = 1:n;  % camber line

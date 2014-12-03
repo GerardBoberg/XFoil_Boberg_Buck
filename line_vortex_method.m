@@ -1,6 +1,6 @@
 function [ Cl, Cm_le, Cm_c4, Cp_dist, lambda  ] = line_vortex_method( ...
                                 x_panels, y_panels, alpha, camber,...
-                                kutta_drop, flip_airfoil  )
+                                kutta_drop, flip_airfoil, co_percent  )
 %LINE_VORTEX_METHOD returns the relevant parameters for a line vortex
 %analysis
 
@@ -11,17 +11,17 @@ n_panels     = length( x_panels ) - 1;
 chord_length = x_panels( (n_panels / 2) + 1 ) - x_panels(1);
 
 % extract panel-by-panel data
-delta_x = x_panels( 2:end ) - x_panels( 1: end-1 ); 
+delta_x = x_panels( 2:end ) - x_panels( 1: end-1 );
 delta_y = y_panels( 2:end ) - y_panels( 1: end-1 );
 panel_lengths = sqrt( delta_x.^2 + delta_y.^2 );
 
 % find the colocation points
-x_colocate = x_panels(1:n_panels) + 0.5 .* delta_x;
-y_colocate = y_panels(1:n_panels) + 0.5 .* delta_y;
+x_colocate = x_panels(1:n_panels) + co_percent .* delta_x;
+y_colocate = y_panels(1:n_panels) + co_percent .* delta_y;
 
 % find the normal vectors
-normal_x      = -delta_y ./ panel_lengths;
-normal_y      =  delta_x ./ panel_lengths;
+normal_x      =   -delta_y ./ panel_lengths;
+normal_y      =    delta_x ./ panel_lengths;
 
 % Create the A matrix
 A = zeros( n_panels, n_panels );
@@ -32,8 +32,10 @@ for ii = 1:n_panels     % the ith colocation point
                                 x_panels( jj:jj+1 ), y_panels( jj:jj+1 ),...
                                 x_colocate( ii ),    y_colocate( ii )   );
         A( ii, jj ) = du * normal_x(ii) + dv * normal_y(ii);
+        %disp( [num2str(du), num2str(normal_x(ii)), num2str(dv), num2str(normal_y(ii)) ] );
     end
 end
+
 
 % Create the u_bar matrix
 u_bar = ones( n_panels, 1 );
@@ -69,7 +71,7 @@ lambda = A \ ( -u_bar ); % inverse A * u_bar
 Cl_perpanel = 2 * transpose(lambda) / chord_length;
 Cl          = sum( Cl_perpanel );
 
-Cp_dist = Cl_perpanel ./ panel_lengths; 
+Cp_dist = Cl_perpanel ./ ( panel_lengths ); 
 
 Cm_le = 0;
 Cm_c4 = 0;

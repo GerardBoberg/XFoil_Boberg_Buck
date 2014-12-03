@@ -36,11 +36,15 @@ I2 = beta2 - beta1; % potentially between 2pi and -2pi
 % Bind the integral, I2, between -pi and pi
 % Edge cases at B1 = +- pi, B2 = 0 && B1 = 0, B2 = +- pi
 if     ( I2 < -pi )
-    I2 = I2 + (2*pi);
+    I2 = I2 + (2*pi);   % if outside of [ -pi, pi ], bind inside
 elseif (I2 >  pi)
     I2 = I2 - (2*pi);
-elseif ( abs(( abs(I2) - pi )) < tollerance )
-    I2 = pi; 
+elseif ( abs(( abs(I2) - pi )) < tollerance ) % if really close to +/- pi
+    if( (I2 < pi) && (I2 > 0) )               % and is greater than 0
+        I2 = pi;                              % then = +pi
+    elseif ( (I2 > -pi) && ( I2 < 0) )        % elseif less than 0
+        I2 = -pi;                             % then = -pi
+    end
 end
 
 % z & n are flipped compared to the line source version.

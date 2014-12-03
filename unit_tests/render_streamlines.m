@@ -11,16 +11,16 @@ else
 end
     
 % setup mesh grid
-x_span = linspace(  -0.5*chord_length, 1.5*chord_length, M );
+x_span = linspace(  -0.5, 1.5, M );
 y_span = linspace( -1, 1, ceil(M) );
 [ x, y ] = meshgrid( x_span, y_span );
 
-U = x; %pre-allocate
-V = y; %pre-allocate
+U = ones( size(x) ); %pre-allocate
+V = ones( size(y) ); %pre-allocate
 
 for ii = 1:M
     for jj = 1:M
-        for kk = 1:n_panels
+        for kk = 1:length( lambda )
             [U(ii,jj), V(ii,jj)] = line_vortex_constant( lambda(kk),...
                                     x_panels(kk:kk+1), y_panels(kk:kk+1),...
                                     x(ii, jj), y(ii,jj) );
@@ -32,6 +32,8 @@ for ii = 1:M
         end
     end
 end
+
+U
 
 stream_x = -0.5*chord_length * ones( 1, ceil(M/2) );
 stream_y = linspace( -1, 1, ceil(M/2) );

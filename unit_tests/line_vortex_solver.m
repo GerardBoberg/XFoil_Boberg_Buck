@@ -1,6 +1,6 @@
 function [ Cl, Cm_le, Cm_c4, Cp_dist, lambda  ] = line_vortex_solver( ...
                                 x_panels, y_panels, alpha, camber,...
-                                                kutta_drop, flip_airfoil )
+                                    kutta_drop, flip_airfoil,co_percent )
 %LINE_VORTEX_SOLVER returns the relevant parameters for a line vortex
 %analysis
 
@@ -15,7 +15,7 @@ panel_lengths_y = y_panels( 2:end ) - y_panels( 1:end-1 );
 panel_lengths   = sqrt( panel_lengths_x .^2 + panel_lengths_y .^2 );
 
 % Find colocation points
-[ x_colocate, y_colocate ] = find_colocation_points( x_panels, y_panels, 0.5 ); 
+[ x_colocate, y_colocate ] = find_colocation_points( x_panels, y_panels, co_percent ); 
 
 % Find the normal vectors
 panel_normals = calc_normal_vectors( x_panels, y_panels );
