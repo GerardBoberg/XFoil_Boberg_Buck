@@ -29,9 +29,11 @@ B = zeros( n, m, 2 );  % Pre-allocate for speed
 
 for ii = 1:m           % Calcualtes the normalized velocity vector
     for jj = 1:n       % of vortex i on colocation point j
-        B( ii, jj, : ) = line_vortex_constant( 1,...
+         [dx, dy]      = line_vortex_constant(   1, ...
                                vortex_x(ii:ii+1)  , vortex_y(ii:ii+1)  ,...
                                   colocate_x(jj)  , colocate_y(jj)   );
+        B( ii, jj, 1 ) = dx;
+        B( ii, jj, 2 ) = dy;
     end
 end
 

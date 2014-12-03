@@ -29,7 +29,12 @@ for ii = 1:n   % for each panel,
    delta_x = x_points( ii+1 ) - x_points( ii ); % find the current slopes 
    delta_y = y_points( ii+1 ) - y_points( ii );
    
-   n_hat = [ delta_x, ( -1 / delta_y ) ]; % the normal vector is < x, -1/y >
+   if ( delta_x * delta_y >= 0 )
+       n_hat = [  -delta_y,  (  delta_x ) ] ;
+   else
+       n_hat = [  -delta_y,  ( delta_x ) ] ;
+   end
+   %n_hat = [ delta_x, ( -1 / delta_y ) ]; % the normal vector is < x, -1/y >
    n_hat = n_hat / norm( n_hat );         % and is of magnitude 1
    
    panel_normals( ii, : ) = n_hat; % add to the array

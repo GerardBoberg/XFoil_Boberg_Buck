@@ -61,8 +61,8 @@ yl = yc - dt .* cos( theta );
 %   the upper and lower points.
 % If layed end-to-end, it would jump to the front of the airfoil at the
 %  junction between lower and upper points.
-outline_x = [ xu, ( xl(end:-1:1) ) ];  % As such, reversed the lower points
-outline_y = [ yu, ( yl(end:-1:1) ) ];  %  before laying arrays end-to-end
+outline_x = [ xu, ( xl( (end-1):-1:1) ) ];  % As such, reversed the lower points
+outline_y = [ yu, ( yl( (end-1):-1:1) ) ];  %  before laying arrays end-to-end
 
 
 end % End of File
