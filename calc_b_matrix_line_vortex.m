@@ -16,12 +16,12 @@ function [ B ] = calc_b_matrix_line_vortex( colocate_x, colocate_y,...
 %
 
 m = length( colocate_x );
-n = length( vortex_x   );
+n = length( vortex_x   ) - 1;
 
 if ( m ~= length( colocate_y ) )
     error( 'colocate_x and colocate_y must have same dimensions' );
 end
-if ( n ~= length( vortex_y ) )
+if ( (n + 1) ~= length( vortex_y ) )
     error( 'vortex_x and vortex_x must have same dimensions' );
 end
 
@@ -30,8 +30,8 @@ B = zeros( n, m, 2 );  % Pre-allocate for speed
 for ii = 1:m           % Calcualtes the normalized velocity vector
     for jj = 1:n       % of vortex i on colocation point j
         B( ii, jj, : ) = line_vortex_constant( 1,...
-                                        colocate_x(jj), colocate_y(jj),...
-                                        vortex_x(ii), vortex_y(ii)   );
+                               vortex_x(ii:ii+1)  , vortex_y(ii:ii+1)  ,...
+                                  colocate_x(jj)  , colocate_y(jj)   );
     end
 end
 
