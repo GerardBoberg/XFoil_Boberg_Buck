@@ -45,10 +45,10 @@ end
 
 % z & n are flipped compared to the line source version.
 u_zp = ( lambda / ( 2*pi ) ) * I2; % induced in zeta direction
-u_np = ( lambda / ( 2*pi ) ) * I1; % induced in eta  direction
+u_np = -( lambda / ( 2*pi ) ) * I1; % induced in eta  direction
 
 %                  as are these +/- signs
-ux =  ( u_zp*cos(theta1) ) + ( (u_np)*sin(theta1) ); % convert to xy coords
-uy =  ( u_zp*sin(theta1) ) - ( (u_np)*cos(theta1) ); 
+ux =  ( u_zp*cos(theta1) ) - ( (u_np)*sin(theta1) ); % convert to xy coords
+uy =  ( u_zp*sin(theta1) ) + ( (u_np)*cos(theta1) ); 
 
 end % End Of File

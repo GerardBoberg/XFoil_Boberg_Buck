@@ -14,10 +14,12 @@ close all;
 % Global Variables
 n = 5; % Number of points for the chord line. 
         % Number of vortex Panels is 2 * (n - 1)
+        
+n_panels = 2 * (n - 1 );
 drop_row_for_kutta = true;
-debug_norms = false;
+debug_norms = true;
 
-alpha = 4 * ( pi/180 ); % Angle of attack, radians
+alpha = 0 * ( pi/180 ); % Angle of attack, radians
 
 %% calculate vortex panels
 
@@ -44,14 +46,14 @@ u_bar = dot_coefficient_matrix( u_bar, panel_normals );
 if ( drop_row_for_kutta )
     % drop the row for the colocation point for the middle of the bottom
     
-    new_row = zeros( 1, 2 * n - 2 );  % the kutta condition states the vortex
-    new_row( 1, n-1:n ) = 1;      % strength for the top and bottom trailing
+    new_row = zeros( 1, n_panels );  % the kutta condition states the vortex
+    new_row( 1, (n_panels/2):(1+n_panels/2) ) = 1;      % strength for the top and bottom trailing
     %new_row( 1, end) = 1;                  % edge panels must be the negative of
                                   % each other. This translates to a row
                                   % of zeros with two ones at the trailing
                                   % edge panels.
     
-    index = ceil(  (n) * 3 / 2 ) - 2; % length is 2 n. 1:n top, n:2n bottom
+    index = ceil(  n_panels * 3/4 ); % length is 2 n. 1:n top, n:2n bottom
     A( index, : ) = new_row;    % middle of the bottom is n * 3/2
     u_bar( index ) = 0;           
     % row replaced, and RHS of equation zero'd out.                                                          
@@ -62,7 +64,7 @@ end
 % Calculate the vortex strengths
 lambdas = A \ (u_bar);
 
-Cl = 4 * pi * sum( lambdas )
+Cl = 2 * sum( lambdas )
 
 %% Calculate and plot Cl, Cm c/4, Cp distribution
 
@@ -84,7 +86,7 @@ y_span = linspace( -0.75, 0.75, S );
 
 for ii = 1:S     % For Each X location
     for jj = 1:S % For Each Y location
-        for kk = 1:(2*n - 2) % For each vortex Panel
+        for kk = 1:n_panels % For each vortex Panel
             
             [ dux, duy ]= line_vortex_constant(...
                                 lambdas(kk),...
@@ -110,13 +112,13 @@ streamline( xp, yp, U, V, streamline_x, streamline_y );
 axis equal
 
 
-if ( debug_norms)
+if ( debug_norms )
 
     xx = 1:2;
     yy = 1:2;
     for ii = 1:length( panel_normals )
-        xx = x_colocate( ii );
-        yy = y_colocate( ii );
+        xx(1) = x_colocate( ii );
+        yy(1) = y_colocate( ii );
 
         xx(2) = xx(1) + panel_normals( ii, 1 );
         yy(2) = yy(1) + panel_normals( ii, 2 );
