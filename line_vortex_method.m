@@ -1,11 +1,14 @@
 function [ Cl, Cm_le, Cm_c4, Cp_dist, lambda  ] = line_vortex_method( ...
-                                x_panels, y_panels, alpha, camber )
+                                x_panels, y_panels, alpha, camber,...
+                                kutta_drop, flip_airfoil  )
 %LINE_VORTEX_METHOD returns the relevant parameters for a line vortex
 %analysis
 
+% version F
+
 % pull out some basic information
 n_panels     = length( x_panels ) - 1;
-chord_length = x_panels( n_panels / 2 ) - x_panels(1);
+chord_length = x_panels( (n_panels / 2) + 1 ) - x_panels(1);
 
 % extract panel-by-panel data
 delta_x = x_panels( 2:end ) - x_panels( 1: end-1 ); 
@@ -35,6 +38,27 @@ end
 % Create the u_bar matrix
 u_bar = ones( n_panels, 1 );
 u_bar = u_bar .* transpose( cos(alpha) * normal_x + sin(alpha) * normal_y );
+
+% Handle Kutta Condition
+te = n_panels / 2;              % find the trailing edge panel
+new_row = zeros( 1, n_panels ); % row of zeros
+if ( flip_airfoil )        % except for trailing edge, which are ones
+    new_row(1)   = 1;
+    new_row(end) = 1;
+else
+    new_row( te:te+1 ) = 1;         
+end
+
+if( kutta_drop )
+    % drop a row from both A and u_bar for the kutta condition
+    index   = ceil( n_panels * 3/4 );  % middle of the bottom of airfoil
+    A( index, : )  = new_row;          % replace the row
+    u_bar( index ) = 0;                % and zero out the RHS
+else
+    % simply apend the row to the bottom, MATLAB will least-squares approx
+    A( end+1, : )  = new_row;
+    u_bar( end+1 ) = 0;
+end
 
 % Solve for the lambdas
 % 0 = A * lambda + u_bar;

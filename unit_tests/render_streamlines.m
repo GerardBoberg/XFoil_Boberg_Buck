@@ -7,11 +7,11 @@ n_panels = length( x_panels ) - 1;
 if ( n_panels <= 1 )
     chord_length = 1;
 else
-    chord_length = x_panels( n_panels / 2 ) - x_panels(1);
+    chord_length = abs( x_panels( (n_panels / 2) + 1 ) - x_panels(1) );
 end
     
 % setup mesh grid
-x_span = linspace(  -chord_length, chord_length, M );
+x_span = linspace(  -0.5*chord_length, 1.5*chord_length, M );
 y_span = linspace( -1, 1, ceil(M) );
 [ x, y ] = meshgrid( x_span, y_span );
 
@@ -33,7 +33,7 @@ for ii = 1:M
     end
 end
 
-stream_x = -chord_length * ones( 1, ceil(M/2) );
+stream_x = -0.5*chord_length * ones( 1, ceil(M/2) );
 stream_y = linspace( -1, 1, ceil(M/2) );
 
 
