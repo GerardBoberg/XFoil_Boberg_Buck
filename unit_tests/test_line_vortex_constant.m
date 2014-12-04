@@ -62,7 +62,7 @@ M = 35;
 render_streamlines( x_panels, y_panels, lambda(1,:), M, 0 );
 
 
-%render_streamlines( [0,1.2], [-0.2,0.1], 1, M );
+render_streamlines( [0,1.2], [-0.2,0.1], 1, M );
 
 
 %%%%%%%%%%%%%%
