@@ -2,7 +2,7 @@
 % 18 Nov 2014
 %  Adapted from Gerard's solution to hwk5, p2 for Dr. Marshall's Aero 306
 function [ camber, outline_x, outline_y, trailing_edge ] = NACA4( ...
-                                                            M, P, TT, n )
+                                                 M, P, TT, n, finite_tail )
 %NACA4 Returns the camber and outline of a 2-d NACA 4-digit airfoil
 %   M   -- the first , Max Camber
 %   P   -- the second digit, Location of Max Camber
@@ -19,6 +19,10 @@ function [ camber, outline_x, outline_y, trailing_edge ] = NACA4( ...
 %   trailing_edge -- the location of the trailing edge point.
 %                (1) is the x-position, (2) is the y-position
 
+if (nargin < 5)
+    finite_tail = false;
+end
+
 m =  M / 100; % max camber
 p =  P / 10;  % location of max camber
 t = TT / 100; % thickness
@@ -29,11 +33,11 @@ yc    = 1:n;  % camber line
 theta = 1:n;  % slope of the camber line
 for ii = 1:n                % Camber line equation taken from Wikipedia
     if( x(ii) <= p )        % before the max camber point
-        yc(ii)    =    m/p^2  * ( 2*p*x(ii) - x(ii)^2 );   
-        theta(ii) = 2*(m/p^2) * ( p - x(ii) );
+        yc(ii)    =    m * x(ii) / p^2  * ( 2*p - x(ii) );   
+        theta(ii) =   (2 * m) / p^2 * ( p - x(ii) );
     else                    % after the max camber point
-        yc(ii)    =   m/(1-p)^2 * ( (1-2*p) + 2*p*x(ii) - x(ii)^2 );
-        theta(ii) = 2*m/(1-p)^2 * ( p - x(ii) );
+        yc(ii)    =    m * (1-x(ii)) / (1-p)^2 * ( 1 + x(ii) - 2*p );
+        theta(ii) =   (2 * m) /(1-p)^2 * ( p - x(ii) );
     end
 end
 
@@ -48,7 +52,7 @@ a1 = -0.1260;
 a2 = -0.3516;
 a3 =  0.2843;
 a4 = -0.1015;
-dt = (t/0.2) * (a0 * sqrt(x) + a1 * x + a2 * x.^2 + a3 * x.^3 + a4 * x.^4 );
+dt = (5*t) * (a0 * sqrt(x) + a1 * x + a2 * x.^2 + a3 * x.^3 + a4 * x.^4 );
 
 %% Calculate upper and lower surfaces
 xu = x - dt .* sin( theta );
@@ -61,8 +65,12 @@ yl = yc - dt .* cos( theta );
 %   the upper and lower points.
 % If layed end-to-end, it would jump to the front of the airfoil at the
 %  junction between lower and upper points.
-outline_x = [ xu, ( xl( (end-1):-1:1) ) ];  % As such, reversed the lower points
-outline_y = [ yu, ( yl( (end-1):-1:1) ) ];  %  before laying arrays end-to-end
-
+if( finite_tail)
+    outline_x = [ xu, ( xl( end:-1:1) ) ]; % reverses lower points
+    outline_y = [ yu, ( yl( end:-1:1) ) ]; % includes a vertical finite end
+else
+    outline_x = [ xu, ( xl( (end-1):-1:1) ) ];  % As such, reversed the lower points
+    outline_y = [ yu, ( yl( (end-1):-1:1) ) ];  %  before laying arrays end-to-end
+end
 
 end % End of File
