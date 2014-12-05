@@ -1,21 +1,30 @@
 
-%% Forward and notes
+%% xfoil project Aero 306
+% Gerard Boberg, Trevor Buck, Zane Patterson
+%
+% 4 Dec 2014
+
+% This file is a script that will run the full panel analysis, changing the
+%    number of panels used to analyize on each iteration.
+%
+% warning: runs in cubic time. Can easily take sevral minutes to calculate.
 
 clc
 clear all
 close all
 
 %% parameters
-L                   = 1;
-n_foil              = ceil( linspace( 161, 161, L ) ); 
+L                   = 35;
+n_foil              = ceil( linspace( 8, 160, L ) ); 
 alpha               = 0;%(pi / 180) * linspace( 0, 10, L );
 coloc_percent       = 0.5;
 kutta_drop          = false;
 debug_vort_render   = false;
-finite_end          = false; % creates problems
-Cl_offset           = 2;
+finite_end          = true;  % toggles finite trailing edge
+Cl_offset           = 1;
 
-M     = 100; % points to calculate induced velocity at for rendering
+
+M     = 35; % points to calculate induced velocity at for rendering
 
 
 %% Calculate Airfoil Parameters
@@ -55,12 +64,19 @@ end
 disp( [ 'Coef of Lift  = ', num2str( Cl(1) ) ] );
 disp( [ 'Coef of c/4 Moment = ', num2str( Cm_c4(1) ) ] );
 
-% plot Cl vs Alpha
+% plot Cl vs n panels
 figure();
 plot( (2.*n_foil-2), Cl )
-title( 'Angle of Attack vs Coefficient of Lift' )
-xlabel( 'Angle of Attack, degrees' )
+title( 'n_panels vs Coefficient of Lift' )
+xlabel( 'number of panels' )
 ylabel( 'Coefficient of Lift' )
+
+% plot Cm vs n panels
+figure();
+plot( (2.*n_foil-2), Cm_c4 )
+title( 'n_panels vs Cm c/4' )
+xlabel( 'number of panels' )
+ylabel( 'Coefficient of c/4 Moment' )
 
 % Render the streamlines and Quiver
 render_vortex_panels( panels_x, panels_y, lambda(end,:), M, alpha(end) );
@@ -69,16 +85,6 @@ if ( debug_vort_render )
 end
 
 % Plot Coefficient of Pressure
-figure();
-coloc_x = panels_x( 1:end-1) + ...
-                coloc_percent * (panels_x( 2:end ) - panels_x( 1:end-1 ));
-plot( coloc_x( 1:end/2), Cp_dist(1,1:end/2), 'r',...
-    coloc_x(end/2+1:end), Cp_dist(1,end/2+1:end), 'b' );
-title(  'Coefficient of Pressure Distribution' );
-xlabel( 'x / chord length' )
-ylabel( 'Cp = 1 - ( u / u_inf )^2' )
-legend( 'Upper surface', 'Lower surface' );
-axis ij;
 
 
 

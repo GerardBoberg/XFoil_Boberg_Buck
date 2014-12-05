@@ -3,13 +3,16 @@
 % Gerard Boberg, Trevor Buck, Zane Patterson
 %
 % 4 Dec 2014
+%
+% This script runs the a loop of  vortex panel analysis L times over
+%    various angles of attacks, then outputs the results of
+%    Cl vs. AoA, and Cm vs. Angle of Attack
 
-clc
-clear all
-close all
+% if running this script by itself, make sure to:
+% clc, clear all, close all
 
 %% parameters
-n_foil              = 9;   % number of points to give to NACA4
+n_foil              = 161;   % number of points to give to NACA4
                              %    n_panels = 2 * ( n_foil - 1 )
 L                   = 31;    % number of times to analyize during sweep
 alpha               = (pi / 180) * linspace( -15, 15, L );
@@ -19,7 +22,7 @@ M     = 35; % points to calculate induced velocity at for rendering
 debug_vort_render   = false;
 
 kutta_drop          = false; % true drops a row, false does a least-squares
-finite_end          = false; % creates problems, don't use
+finite_end          = false; % attempts to model a finite edge. Less acc
 Cl_offset           = 1;     % Cl, Cm are multiplied by this. 
                              %    Used for tuning
 
@@ -40,6 +43,8 @@ Cm_le  = 1:L;
 Cm_c4  = 1:L;
 Cp_dist= zeros( L, n_panels(end)) ;
 for ii = 1:L
+    disp( [ 'calculating for alpha = ',...
+            num2str( 180/pi*alpha(ii) ), 'degrees' ] );
     
     [ lambda_t, Cl_t, Cm_le_t, Cm_c4_t, Cp_dist_t ] = vortex_panel_analysis(...
         panels_x, panels_y, alpha(ii), coloc_percent, kutta_drop, finite_end );
@@ -50,13 +55,12 @@ for ii = 1:L
     Cm_c4(ii)               = Cm_c4_t * Cl_offset;
     Cp_dist(ii, 1:n_panels) = Cp_dist_t;
     
-    disp( [ 'alpha_radians = ', num2str(alpha(ii)),...
-            '      alpha_degrees = ', num2str( 180/pi*alpha(ii) ) ] );
 end
             
 %% Rendering
 % output basic information
 disp( [ '--- finished sweep ---'] );
+disp( ' ' );
 disp( [ 'Coef of Lift  = ', num2str( Cl ) ] );
 disp( [ 'Coef of c/4 Moment = ', num2str( Cm_c4 ) ] );
 slope_Cl = ( Cl(end) - Cl(1) ) / ( pi* ( alpha(end) - alpha(1) ) ) ;
@@ -78,6 +82,29 @@ xlabel( 'Angle of Attack, degrees' )
 ylabel( 'Coefficient of Moment' )
 legend( 'Cm, quarter chord'); %, 'Cm, leading edge' )
 
+
+%% Create a text table output
+
+disp( ['     NACA 2212'] );
+disp( ['  AoA      Cl      Cm c/4']);
+disp( ['_______  _______   _______']);
+for ii = 1:L
+    f = '%1.4f';
+    output_str = '';
+    if( alpha(ii) >= 0 )
+        output_str = [ output_str, ' ' ];
+    end
+    output_str = [num2str( alpha(ii), f ), '   '];
+    
+    if( Cl(ii) >= 0 )
+        output_str = [ output_str, ' ' ];
+    end
+    output_str = [ output_str, num2str( Cl(ii), f ), '   ' ];
+    
+    output_str = [ output_str, num2str( Cm_c4(ii), f ), '   ' ];
+       
+    disp ( output_str );
+end
 
 % End of File
 

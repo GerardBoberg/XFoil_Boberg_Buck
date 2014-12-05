@@ -4,8 +4,8 @@ function [ ] = render_vortex_panels( panels_x, panels_y, lambda, M, alpha )
 n_panels = length( panels_x ) - 1; 
 
 % generate coordinates
-x_span = linspace( -1, 2, M );
-y_span = linspace( -1, 1, M );
+x_span = linspace( -0.3, 1.3, M );
+y_span = linspace( -0.5, 0.5, M );
 [ xp, yp ] = meshgrid( x_span, y_span );
 
 % setup velocity grid
@@ -45,8 +45,8 @@ legend(['Angle of Attack = ' num2str( alpha * 180/pi ), 'degrees'] );
 axis equal;
 
 % Streamline plot the results
-stream_x = -1 * ones( 1, ceil( M/2 ) );   % starting locations of the
-stream_y = linspace( -1, 1, ceil( M/2 ) );% streamlines
+stream_x = -0.3 * ones( 1, ceil( M/2 ) );   % starting locations of the
+stream_y = linspace( -0.48, 0.49, ceil( M/2 ) );% streamlines
 
 figure();
 streamline( xp, yp, ux, vy, stream_x, stream_y );
