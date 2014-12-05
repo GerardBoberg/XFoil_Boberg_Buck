@@ -25,17 +25,18 @@ function [ lambda, Cl, Cm_le, Cm_c4, Cp_dist ] = vortex_panel_analysis(...
 %   Cp_dist: Distribution of Coefficient of Pressure across the panels
 %
 
+% set parameters to default values if not given.
 if (nargin < 3)
-    alpha = 0;
+    alpha = 0;           % 0 degrees AoA
 end
 if (nargin < 4)
-    coloc_percent = 0.5;
+    coloc_percent = 0.5; % 50% point
 end
 if (nargin < 5)
-    kutta_drop = false;
+    kutta_drop = false;  % default to a least-squares minimization
 end
 if (nargin < 6)
-    finite_end = false;
+    finite_end = false;  % default to using a zero-length edge
 end
 
 
@@ -66,13 +67,6 @@ for ii = 1:n_panels     % colocation points
         
                                     % dotted with the colocation's normal
         A( ii, jj ) = ( dux * norm_x(ii) ) + ( dvy * norm_y(ii) );
-        
-        
-        if( (ii == ((n_panels-1)/2)) && finite_end )
-        % also handle replacing the row for a finite end with a | panel 
-        %   that is purely normal -- use a cross product
-            A( ii, jj ) = ( dux * norm_y(ii) ) - ( dvy * norm_x(ii) );
-        end
     end
 end
 
@@ -80,10 +74,6 @@ end
 % u_vector = < cos, sin > dot norm_vector
 % transposed to make it tall. 
 u_bar = transpose( (cos( alpha ) .* norm_x ) + ( sin( alpha ) .* norm_y ) );
-if( finite_end )
-    u_bar( (n_panels-1)/2 ) = cos( alpha ) * norm_y( (n_panels-1)/2 )...
-                            - sin( alpha ) * norm_x( (n_panels-1)/2 );
-end
 
 %% Handle the Kutta Condition
 % Create the row to add or swap into A
@@ -91,19 +81,15 @@ new_row = zeros( 1, n_panels ); % long vector
 
 if( finite_end )  % odd number, want \ and / panels, not the | inbetween
     new_row( (n_panels-1)/2 - 1 ) = 1;
+    new_row( (n_panels-1)/2 + 0 ) = 0; % 000101000
     new_row( (n_panels-1)/2 + 1 ) = 1;
-    
-    trailing_row         = zeros( 1, n_panels );
-    trailing_row( (n_panels-1)/2 ) = 1;
-    A( end+1, :  ) = trailing_row;
-    u_bar( end+1 ) = 0;
 else
-    new_row( n_panels/2 + 0 ) = 1;  % even number, point end.
+    new_row( n_panels/2 + 0 ) = 1;  % even number, point end. 00011000
     new_row( n_panels/2 + 1 ) = 1;
 end
 
 if( kutta_drop )   % if true, drop a row. Else, add without dropping
-    % drop the bottom of the middle panel
+    % drop the colocation point of the middle-bottom panel
     index_to_drop = ceil( n_panels * 3/4 ) ;
     
     A( index_to_drop, : )  = new_row;
@@ -117,9 +103,9 @@ end
 
 
 %% Calculate the lambda array -- the strength of the vortex panels
-% 0        = (A * lambda) dot normals + u_bar dot normals
-% 0       = _A_ * lambda + _U_BAR_
-% -U_BAR  = _A_ * lambda
+% 0             = (A dot normals) * lambda  + u_bar dot normals
+% 0             = _A_ * lambda + _U_BAR_
+% -U_BAR        = _A_ * lambda
 % A^-1 * -U_BAR = lambda
 % A \ -U_BAR    = lambda
 lambda = A \ ( -u_bar );
@@ -127,8 +113,13 @@ lambda = A \ ( -u_bar );
 %% Calculate the performance characteristics
 
 % coefficient of lift
+% Cl is based off the total vorticity in the system.
+% Treat the vortex panels as vortex points to find the total vorticity.
+% The lambda (strength) of each vortex panel is the differential strength
+%     over the length of the panel.
+% So multiply by panel length to get strength of equivelent point vort.
 chord_length = 1;
-Cl_per_panel = 2 * lambda .* transpose(panel_lengths);
+Cl_per_panel = 2 * lambda .* transpose( panel_lengths );
 Cl           = sum( Cl_per_panel );
 
 % coefficient of pressure
@@ -172,23 +163,25 @@ for ii = 1:n_panels    % ith colocation point
     % r = r / chord_length;   % chord length = 1
     
     % r cross norm = rx * norm_y - ry * norm_x
-    Cm_le = Cm_le + Cl_per_panel(ii) *...
+    % Cm = integral from o to 1 to 0 of r cross norm * dx
+    % dx = panel_lengths
+    Cm_le = Cm_le + Cp_dist(ii) * panel_lengths(ii) *...
         ( r_x * norm_y(ii) - r_y * norm_x(ii) );
     
-    r_x = coloc_x(ii) - c4_x;
-    r_y = coloc_y(ii) - c4_y;
+    r_x = -coloc_x(ii) + c4_x;
+    r_y = -coloc_y(ii) + c4_y;
     % r = r / chord_length
     
     % r cross norm = rx * norm_y - ry * norm_x
-    Cm_c4 = Cm_c4 + Cl_per_panel(ii) *...
+    Cm_c4 = Cm_c4 + Cp_dist(ii) * panel_lengths(ii) * ...
         ( r_x * norm_y(ii) - r_y * norm_x(ii) );
     
 end
 
 
 % Aerospace moments are left-hand rule, so just negate the result.
-Cm_le = Cm_le / chord_length;
-Cm_c4 = Cm_c4 / chord_length;
+Cm_le = -Cm_le / chord_length;
+Cm_c4 = -Cm_c4 / chord_length;
 
 
 end % End of File
